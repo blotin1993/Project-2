@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+    <script>
+
+
+      //get username from localStorage
+      let username = localStorage.getItem('username');
+
+      document.addEventListener('DOMContentLoaded', () => {
+
+        // Connect to websocket
+        var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+
+
+        socket.on('connect', () => {
+
+          //update header html with username
+          document.querySelector("#header").innerHTML=username+':';
+      });
+
+        socket.on('send message', message => {
+
+              let li = document.createElement("LI");
+              li.innerHTML = message;
+              li.innerHTML = "Message: " + message;
+              document.querySelector("message_list").innerHTML = li;
+
+          });
+
+          document.querySelector("#send").onclick = () => {
+
+            var message = document.querySelector("#message").value;
+            document.querySelector("#message").value = '';
+            socket.emit('send message', message);
+
+            }
+        });
+
+    </script>
+    <style>
+      fieldset {
+        margin: 20px;
+      }
+    </style>
+    <title>Project 2</title>
+  </head>
+  <body>
+    <h2 id="header"></h2>
+      <input id="message" type="text" placeholder="Send Message">
+      <button type="button" id="send">Send</button>
+    <fieldset>
+      <ul id="message_list"></ul>
+    </fieldset>
+  </body>
+</html>

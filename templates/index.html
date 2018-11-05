@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+    <script>
+
+        // Set starting value of username to ''
+        if (!localStorage.getItem('username'))
+            localStorage.setItem('username', '');
+
+        var channels = document.querySelectorAll("#channels");
+        // Load current value of username
+        document.addEventListener('DOMContentLoaded', () => {
+
+          // Connect to websocket
+          var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+          });
+          // checks if username is already submitted, if it is, it'll disable submit button
+          if (localStorage.getItem('username') != '') {
+            document.querySelector('#user_title').innerHTML = localStorage.getItem('username');
+            document.querySelector('#submit').disabled = true;
+          }
+
+          document.querySelector('#new-user').onsubmit = () => {
+
+            //submit a new username
+            let username = document.querySelector('#username').value;
+            localStorage.setItem('username', username);
+            document.querySelector('#user_title').innerHTML = username;
+          }
+            //delete the username
+          document.querySelector("#delete_user").onclick = () => {
+            localStorage.removeItem('username');
+            document.querySelector('#user_title').innerHTML = '';
+            document.querySelector('#submit').disabled = false;
+          }
+
+          //create a new channel
+          document.querySelector("#create_channel").onclick = () => {
+
+            var channel = document.querySelector("#channel_name").value;
+            let li = document.createElement("LI");
+            li.innerHTML = '<a href=" {{ url_for("channel") }}" target="_blank"> Channel: '+ channel + '</a>';
+            document.getElementById("channels").appendChild(li);
+          }
+          socket.on('connect', () => {
+            emit("session_username", username)
+        });
+    </script>
+    <style>
+      div {
+          font-family: 'Roboto', sans-serif;
+          text-align: center;
+          padding: 10px;
+      }
+      button {
+        margin: 10px;
+      }
+      fieldset {
+        border-radius: 5px;
+        border-color: #3671d1;
+        border-style: dashed;
+      }
+      #user_title {
+        font-style: oblique;
+        color: blue;
+      }
+      button {
+        border-radius: 5px;
+        border-right-color: blue;
+        border-left-color: blue;
+        border-bottom-color: blue;
+      }
+      #div_channels {
+        text-align: left;
+      }
+    </style>
+    <title>Project 2</title>
+  </head>
+  <body>
+      <div class="logo">
+        <img src="https://cdn.shopify.com/s/files/1/0064/3671/6609/files/P2Logo_410x.png?v=1531335537" width="250" alt="logo">
+      </div>
+      <div>
+          <fieldset>
+            <legend>Username<sup>2</sup></legend>
+            <h1 id="user_title"></h1>
+            <form id="new-user">
+                <label>Insert username</label>
+                <input id="username" autocomplete="off" placeholder="username" type="text" required>
+                <button id="submit" type="submit">create</button>
+            </form>
+                <button id="delete_user" type="button" name="delete_user">Delete user</button>
+          </fieldset>
+      </div>
+      <div id="div_channels">
+        <fieldset>
+          <legend>Channels<sup>2</sup></legend>
+              <input type="text" id="channel_name" name="channel" placeholder="" required>
+              <button id="create_channel" type="button" name="create_channel">new channel</button>
+              <ol id="channels"></ol>
+        </fieldset>
+      </div>
+  </body>
+</html>
